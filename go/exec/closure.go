@@ -30,6 +30,8 @@ func main() {
 
 	c, d := 1, 2
 
+	//defer 调用会在当前函数执行结束前才被执行，这些调用被称为延迟调用，
+	//defer 中使用匿名函数依然是一个闭包。
 	defer func(a int) {
 		fmt.Printf("c:%d,d:%d\n", a, d) // y 为闭包引用
 	}(c) // 复制 x 的值
