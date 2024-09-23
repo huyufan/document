@@ -1,27 +1,97 @@
 package gee
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+	"strings"
+)
 
 type router struct {
-	handlers map[string]handlerFunc
+	roots    map[string]*node
+	handlers map[string]HandlerFunc
 }
 
-func NewRouter() *router {
-	return &router{handlers: make(map[string]handlerFunc)}
+func newRouter() *router {
+	return &router{
+		roots:    make(map[string]*node),
+		handlers: make(map[string]HandlerFunc),
+	}
 }
 
-func (r *router) AddRoute(method string, path string, handler handlerFunc) {
-	str := method + "-" + path
-	r.handlers[str] = handler
+// Only one * is allowed
+func parsePattern(pattern string) []string {
+	vs := strings.Split(pattern, "/")
+
+	parts := make([]string, 0)
+	for _, item := range vs {
+		if item != "" {
+			parts = append(parts, item)
+			if item[0] == '*' {
+				break
+			}
+		}
+	}
+	return parts
 }
 
-func (r *router) handler(c *Context) {
-	str := c.Method + "-" + c.Path
+func (r *router) addRoute(method string, pattern string, handler HandlerFunc) {
+	parts := parsePattern(pattern)
 
-	if handler, ok := r.handlers[str]; ok {
-		handler(c)
-	} else {
-		c.String(http.StatusNotFound, "404%s", c.Path)
+	key := method + "-" + pattern
+	_, ok := r.roots[method]
+	if !ok {
+		r.roots[method] = &node{}
+	}
+	r.roots[method].insert(pattern, parts, 0)
+	r.handlers[key] = handler
+}
+
+func (r *router) getRoute(method string, path string) (*node, map[string]string) {
+	searchParts := parsePattern(path)
+	params := make(map[string]string)
+	root, ok := r.roots[method]
+
+	if !ok {
+		return nil, nil
+	}
+	//home/name
+	n := root.search(searchParts, 0)
+	fmt.Println(n)
+	if n != nil {
+		parts := parsePattern(n.pattern)
+		for index, part := range parts {
+			if part[0] == ':' {
+				params[part[1:]] = searchParts[index]
+			}
+			if part[0] == '*' && len(part) > 1 {
+				params[part[1:]] = strings.Join(searchParts[index:], "/")
+				break
+			}
+		}
+		return n, params
 	}
 
+	return nil, nil
+}
+
+func (r *router) getRoutes(method string) []*node {
+	root, ok := r.roots[method]
+	if !ok {
+		return nil
+	}
+	nodes := make([]*node, 0)
+	root.travel(&nodes)
+	return nodes
+}
+
+func (r *router) handle(c *Context) {
+	n, params := r.getRoute(c.Method, c.Path)
+	if n != nil {
+		c.Params = params
+		key := c.Method + "-" + n.pattern
+		c.handlers = append(c.handlers, r.handlers[key])
+	} else {
+		c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
+	}
+	c.Next()
 }
