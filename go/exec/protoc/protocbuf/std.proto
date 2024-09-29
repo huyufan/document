@@ -1,0 +1,8 @@
+syntax = "proto3";
+package std; //即包名声明符是可选的，用来防止不同的消息类型有命名冲突
+option go_package ="exec/go/exec/protoc/protocbuf;std"; //第一个参数是输出路径，第二个参数是输出go文件包名
+message Student {
+    string name = 1;
+    bool male = 2;
+    repeated int32 scores = 3; //每个字段的修饰符默认是 singular，一般省略不写，repeated 表示字段可重复，即用来表示 Go 语言中的数组类型
+}
