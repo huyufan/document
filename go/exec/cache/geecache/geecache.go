@@ -2,6 +2,7 @@ package geecache
 
 import (
 	"errors"
+	"exec/go/exec/cache/geecache/geecachepb"
 	"exec/go/exec/cache/geecache/singleflight"
 	"log"
 	"sync"
@@ -75,11 +76,16 @@ func (g *Group) Get(key string) (ByteView, error) {
 }
 
 func (g *Group) getFromPeer(peer PeerGetter, key string) (ByteView, error) {
-	bytes, err := peer.Get(g.name, key)
+	req := &geecachepb.Request{
+		Group: g.name,
+		Key:   key,
+	}
+	res := &geecachepb.Response{}
+	err := peer.Get(req, res)
 	if err != nil {
 		return ByteView{}, err
 	}
-	return ByteView{b: bytes}, nil
+	return ByteView{b: res.Value}, nil
 }
 
 func (g *Group) load(key string) (value ByteView, err error) {
