@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package rpc ;
+
+option go_package ="./rpc;rpc";
+
+
+message Request {
+    string Name = 1;
+}
+
+message Response {
+    bytes Value = 1; 
+}
+
+
+service SearchService{
+    rpc Search(Request) returns (Response);
+}
+
+
+
