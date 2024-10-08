@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	cmd := exec.Command("E:\\program\\tesseract\\tesseract.exe", "./path/ab.png", "./path/ab", "--psm", "6")
+	cmd := exec.Command("E:\\program\\tesseract\\tesseract.exe", "./path/pg.jpg", "./path/pg", "--psm", "6")
 
 	err := cmd.Run()
 
