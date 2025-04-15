@@ -3,3 +3,5 @@
 # 安装java java -version
 
 # 下载 elasticSearch
+
+

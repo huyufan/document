@@ -98,3 +98,5 @@ show variables like 'max_connections'
 - 主键索引查询
 - 全表扫描
 - 索引下推
+
+### 索引下推  能够减少二级索引在查询时的回表操作，提供查询效率，把server层负责的事情 交给存储引擎去做
