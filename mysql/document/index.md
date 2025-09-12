@@ -63,7 +63,14 @@ select id from product where product_no='0002'
 - 这边我们暂时按一条行数据 1k 来算，那一页就能存下 15 条，Y = 15*1024/1000  ≈15。
 - 根据上述的公式，Total =x^(z-1) *y，已知 x=1280，y=15：
 
--  假设 B+ 树是两层，那就是 z = 2， Total = （1280 ^1 ）*15 = 19200
 - 假设 B+ 树是两层，那就是 z = 2， Total = （1280 ^1 ）*15 = 19200
+- 假设 B+ 树是两层，那就是 z = 3， Total = （1280 ^2 ）*15 = 24576000
+
+
+## 索引使用情况
+- show status like 'handler_read%'
+### 注意
+- handler_read_key 这个值越高越好，越高表示使用索引查询到的次数
+- handler_read_rnd_next 这个值越高，说明查询低效
 
 
