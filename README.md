@@ -9,6 +9,10 @@
 - 脚本 - [重启服务继续运行][4]
 
 
+## js
+
+- 文档 -[地址][5]
+
 
 
 
@@ -17,3 +21,4 @@
 [2]:https://github.com/huyufan/document/tree/master/go/document
 [3]:https://github.com/huyufan/document/tree/master/go/exec
 [4]:https://github.com/huyufan/document/tree/master/go/shell
+[5]:https://github.com/huyufan/document/blob/master/js/document.md
